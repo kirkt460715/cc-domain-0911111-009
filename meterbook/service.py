@@ -8,6 +8,7 @@ from meterbook.audit import checks, explanations, anomalies
 from meterbook.ports import files, bundles, receipts, transfer, mapping
 from meterbook.audit import closing, verification
 from meterbook.settlement import reviews
+from meterbook.variance import analysis, desk
 
 
 class Meterbook:
@@ -24,6 +25,7 @@ class Meterbook:
         self.imports = mapping.Imports(self.store)
         self.statements = closing.Statements(self.store)
         self.reviews = reviews.Reviews(self.store)
+        self.variance = desk.VarianceDesk(self.store)
         self.routes = {}
         modules = {
             'contract': registry, 'rate': rates, 'event': receiver,
@@ -31,6 +33,7 @@ class Meterbook:
             'price': pricing, 'invoice': invoices, 'payment': payments,
             'check': checks, 'explain': explanations, 'anomaly': anomalies,
             'verification': verification, 'closing': closing, 'file': files, 'bundle': bundles, 'preflight': preflight,
+            'variance': analysis,
         }
         for prefix, module in modules.items():
             for name, function in inspect.getmembers(module, inspect.isfunction):
@@ -45,6 +48,7 @@ class Meterbook:
             'cost': self.costcenters, 'budget': self.budgets,
             'receipt': self.receipts, 'transfer': self.transfers,
             'import': self.imports, 'statement': self.statements, 'review': self.reviews,
+            'variance_desk': self.variance,
         }.items():
             for name, method in inspect.getmembers(service, inspect.ismethod):
                 if not name.startswith('_'):
